@@ -9,9 +9,10 @@ Asegúrate de que tu repositorio contenga estos archivos:
 - `render.yaml` - Configuración de Render
 - `Dockerfile` - Configuración de Docker
 - `start-production.sh` - Script de inicio
-- `nginx.conf` - Configuración de nginx
-- `.htpasswd` - Archivo de contraseñas
+- `nginx.conf.example` - Ejemplo de configuración de nginx
 - `src/main/resources/workspace.dsl` - Archivo DSL de Structurizr
+
+**Nota**: Los archivos `nginx.conf` y `.htpasswd` se generan automáticamente durante el build.
 
 ### 2. Crear Cuenta en Render
 

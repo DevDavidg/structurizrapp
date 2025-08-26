@@ -2,15 +2,17 @@
 FROM nginx:alpine
 
 # Instalar dependencias
-RUN apk add --no-cache curl docker
+RUN apk add --no-cache curl docker apache2-utils
 
 # Crear directorio de trabajo
 WORKDIR /app
 
 # Copiar archivos de configuración
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY .htpasswd /etc/nginx/.htpasswd
+COPY nginx.conf.example /etc/nginx/nginx.conf
 COPY src/main/resources/workspace.dsl /usr/local/structurizr/workspace.dsl
+
+# Generar archivo de contraseñas
+RUN htpasswd -cb /etc/nginx/.htpasswd admin 1234
 
 # Script de inicio
 COPY start-production.sh /start-production.sh
