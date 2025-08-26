@@ -25,7 +25,7 @@ http {
     types_hash_max_size 2048;
     
     server {
-        listen $PORT;
+        listen 8080;
         server_name localhost;
         root /usr/share/nginx/html;
         index index.html;
@@ -48,7 +48,7 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Port $PORT;
+            proxy_set_header X-Forwarded-Port 8080;
             
             # Configuración adicional para evitar problemas de redirección
             proxy_buffering off;
