@@ -8,7 +8,7 @@ PORT=${PORT:-8080}
 echo "🌐 Puerto asignado: $PORT"
 
 # Modificar configuración de nginx para usar el puerto correcto
-sed -i "s/listen 8080;/listen $PORT;/" /etc/nginx/nginx.conf
+sed -i "s/listen 8081;/listen $PORT;/" /etc/nginx/nginx.conf
 sed -i "s/X-Forwarded-Port 8080;/X-Forwarded-Port $PORT;/" /etc/nginx/nginx.conf
 
 # Verificar que los archivos necesarios existen
