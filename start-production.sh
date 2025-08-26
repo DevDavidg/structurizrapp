@@ -43,6 +43,12 @@ if [ ! -f "/usr/local/structurizr/workspace.dsl" ]; then
 fi
 echo "✅ Archivo workspace.dsl verificado"
 
+# Verificar contenido del workspace
+echo "🔍 Verificando contenido del workspace:"
+echo "📄 Primeras 5 líneas del workspace.dsl:"
+head -5 /usr/local/structurizr/workspace.dsl
+echo "📄 Tamaño del archivo: $(wc -l < /usr/local/structurizr/workspace.dsl) líneas"
+
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
 cd /usr/local/structurizr
@@ -62,12 +68,16 @@ if kill -0 $STRUCTURIZR_PID 2>/dev/null; then
     echo "✅ Structurizr Lite iniciado correctamente"
     
     # Mostrar logs de Structurizr
-    echo "🔍 Logs de Structurizr Lite:"
-    if [ -f "/tmp/structurizr.log" ]; then
-        tail -20 /tmp/structurizr.log
-    else
-        echo "⚠️  No se encontraron logs de Structurizr"
-    fi
+echo "🔍 Logs de Structurizr Lite:"
+if [ -f "/tmp/structurizr.log" ]; then
+    echo "📄 Últimas 30 líneas del log:"
+    tail -30 /tmp/structurizr.log
+    echo ""
+    echo "🔍 Buscando errores específicos:"
+    grep -i "error\|exception\|failed" /tmp/structurizr.log || echo "No se encontraron errores"
+else
+    echo "⚠️  No se encontraron logs de Structurizr"
+fi
     
     # Verificar que esté escuchando en el puerto 8080
 echo "🔍 Verificando que Structurizr esté escuchando en puerto 8080..."
