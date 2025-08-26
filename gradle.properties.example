@@ -1,0 +1,14 @@
+# Ejemplo de configuración de Gradle
+# Copia este archivo como gradle.properties y modifica según tu entorno
+
+# Configuración de Java para Gradle
+# org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk-24.jdk/Contents/Home
+
+# Configuración de memoria
+org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
+
+# Configuración de paralelismo
+org.gradle.parallel=true
+
+# Configuración de caché
+org.gradle.caching=true

@@ -1,0 +1,53 @@
+# Ejemplo de configuración de nginx para Structurizr Lite
+# Copia este archivo como nginx.conf y modifica según necesites
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    # Configuración para manejar redirecciones
+    proxy_redirect off;
+    
+    server {
+        listen 8080;
+        
+        # Configuración para Structurizr Lite
+        location / {
+            auth_basic "Sistema ERP - Arquitectura";
+            auth_basic_user_file /etc/nginx/.htpasswd;
+            
+            proxy_pass http://structurizr-lite:8080;
+            
+            # Headers para mantener el puerto en las redirecciones
+            proxy_set_header Host $host:8080;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host:8080;
+            proxy_set_header X-Forwarded-Port 8080;
+            
+            # Configuración adicional para evitar problemas de redirección
+            proxy_buffering off;
+            proxy_request_buffering off;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            
+            # Timeouts
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+        }
+        
+        # Configuración específica para assets estáticos
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            proxy_pass http://structurizr-lite:8080;
+            proxy_set_header Host $host:8080;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+    }
+}
