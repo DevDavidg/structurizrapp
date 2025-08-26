@@ -56,7 +56,7 @@ echo "🔍 Directorio actual: $(pwd)"
 echo "🔍 Contenido del directorio:"
 ls -la
 echo "🔍 Ejecutando Structurizr Lite..."
-java -jar structurizr-lite.war --workspace /usr/local/structurizr --port 8080 > /tmp/structurizr.log 2>&1 &
+java -jar structurizr-lite.war /usr/local/structurizr > /tmp/structurizr.log 2>&1 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
@@ -66,11 +66,11 @@ sleep 30
 # Esperar a que Structurizr esté completamente iniciado
 echo "🔍 Esperando a que Structurizr esté completamente listo..."
 for i in {1..10}; do
-    if netstat -tuln | grep -q ":(1801[23]|19099)"; then
-        echo "✅ Structurizr Lite detectado en puerto, intento $i"
+    if netstat -tuln | grep -q ":8080 "; then
+        echo "✅ Structurizr Lite detectado en puerto 8080, intento $i"
         break
     fi
-    echo "⏳ Esperando puerto de Structurizr Lite, intento $i/10..."
+    echo "⏳ Esperando puerto de Structurizr Lite (8080), intento $i/10..."
     sleep 5
 done
 
@@ -102,20 +102,29 @@ else
     # Buscar puerto de Structurizr Lite
     echo "🔍 Buscando puerto de Structurizr Lite..."
     echo "🔍 Puertos disponibles:"
-    netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)"
+    netstat -tuln | grep LISTEN | grep ":8080"
     
-    # Intentar múltiples veces para encontrar el puerto correcto
-    STRUCTURIZR_PORT=""
-    for attempt in {1..5}; do
-        echo "🔍 Intento $attempt de detectar puerto..."
-        STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | sed 's/.*://')
-        if [ ! -z "$STRUCTURIZR_PORT" ]; then
-            echo "✅ Puerto detectado: $STRUCTURIZR_PORT"
-            break
-        fi
-        echo "⏳ Puerto no detectado, esperando 2 segundos..."
-        sleep 2
-    done
+    # Verificar si Structurizr está en puerto 8080
+    if netstat -tuln | grep -q ":8080 "; then
+        STRUCTURIZR_PORT="8080"
+        echo "✅ Structurizr Lite detectado en puerto 8080"
+    else
+        echo "⚠️  Structurizr Lite no está en puerto 8080, buscando puertos alternativos..."
+        netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)"
+        
+        # Intentar múltiples veces para encontrar el puerto correcto
+        STRUCTURIZR_PORT=""
+        for attempt in {1..5}; do
+            echo "🔍 Intento $attempt de detectar puerto alternativo..."
+            STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | sed 's/.*://')
+            if [ ! -z "$STRUCTURIZR_PORT" ]; then
+                echo "✅ Puerto alternativo detectado: $STRUCTURIZR_PORT"
+                break
+            fi
+            echo "⏳ Puerto no detectado, esperando 2 segundos..."
+            sleep 2
+        done
+    fi
     echo "🔍 Puerto final extraído: '$STRUCTURIZR_PORT'"
     if [ ! -z "$STRUCTURIZR_PORT" ]; then
         echo "✅ Structurizr Lite encontrado en puerto $STRUCTURIZR_PORT"
