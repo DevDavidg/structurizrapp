@@ -51,12 +51,11 @@ echo "📄 Tamaño del archivo: $(wc -l < /usr/local/structurizr/workspace.dsl) 
 
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
-cd /usr/local/structurizr
 echo "🔍 Directorio actual: $(pwd)"
 echo "🔍 Contenido del directorio:"
-ls -la
+ls -la /usr/local/structurizr/
 echo "🔍 Ejecutando Structurizr Lite..."
-java -jar structurizr-lite.war /usr/local/structurizr > /tmp/structurizr.log 2>&1 &
+java -jar /usr/local/structurizr/structurizr-lite.war /usr/local/structurizr > /tmp/structurizr.log 2>&1 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
@@ -75,8 +74,11 @@ for i in {1..10}; do
 done
 
 # Verificar que Structurizr esté ejecutándose
+echo "🔍 Verificando proceso Structurizr Lite (PID: $STRUCTURIZR_PID)..."
 if kill -0 $STRUCTURIZR_PID 2>/dev/null; then
     echo "✅ Structurizr Lite iniciado correctamente"
+    echo "🔍 Proceso Java ejecutándose:"
+    ps aux | grep java | grep -v grep
     
     # Mostrar logs de Structurizr
 echo "🔍 Logs de Structurizr Lite:"
