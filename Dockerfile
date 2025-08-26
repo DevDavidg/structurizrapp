@@ -10,10 +10,10 @@ WORKDIR /app
 # Crear directorio para Structurizr
 RUN mkdir -p /usr/local/structurizr
 
-# Descargar Structurizr Lite
-RUN curl -L -o /usr/local/structurizr/structurizr-lite.jar \
-    "https://github.com/structurizr/lite/releases/download/v2025.05.28/structurizr-lite.jar" && \
-    ls -la /usr/local/structurizr/structurizr-lite.jar && \
+# Descargar Structurizr Lite (ahora es un archivo WAR)
+RUN curl -L -o /usr/local/structurizr/structurizr-lite.war \
+    "https://github.com/structurizr/lite/releases/download/v2025.05.28/structurizr-lite.war" && \
+    ls -la /usr/local/structurizr/structurizr-lite.war && \
     echo "Structurizr Lite descargado correctamente"
 
 # Copiar archivos de configuración

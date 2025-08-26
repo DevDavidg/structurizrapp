@@ -20,17 +20,17 @@ fi
 # Crear directorio para Structurizr si no existe
 mkdir -p /usr/local/structurizr
 
-# Verificar que el archivo JAR existe y es válido
+# Verificar que el archivo WAR existe y es válido
 echo "🔍 Verificando archivo Structurizr Lite..."
-if [ ! -f "/usr/local/structurizr/structurizr-lite.jar" ]; then
-    echo "❌ Error: Archivo structurizr-lite.jar no encontrado"
+if [ ! -f "/usr/local/structurizr/structurizr-lite.war" ]; then
+    echo "❌ Error: Archivo structurizr-lite.war no encontrado"
     exit 1
 fi
 
-# Verificar que el archivo JAR tiene un tamaño razonable (más de 1MB)
-FILE_SIZE=$(stat -c%s /usr/local/structurizr/structurizr-lite.jar 2>/dev/null || stat -f%z /usr/local/structurizr/structurizr-lite.jar 2>/dev/null || echo "0")
+# Verificar que el archivo WAR tiene un tamaño razonable (más de 1MB)
+FILE_SIZE=$(stat -c%s /usr/local/structurizr/structurizr-lite.war 2>/dev/null || stat -f%z /usr/local/structurizr/structurizr-lite.war 2>/dev/null || echo "0")
 if [ "$FILE_SIZE" -lt 1000000 ]; then
-    echo "❌ Error: Archivo structurizr-lite.jar es muy pequeño ($FILE_SIZE bytes), posiblemente corrupto"
+    echo "❌ Error: Archivo structurizr-lite.war es muy pequeño ($FILE_SIZE bytes), posiblemente corrupto"
     exit 1
 fi
 
@@ -38,7 +38,7 @@ echo "✅ Archivo Structurizr Lite verificado"
 
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
-java -jar /usr/local/structurizr/structurizr-lite.jar /usr/local/structurizr/workspace.dsl 8080 &
+java -jar /usr/local/structurizr/structurizr-lite.war /usr/local/structurizr/workspace.dsl 8080 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
