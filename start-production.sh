@@ -71,14 +71,26 @@ if kill -0 $STRUCTURIZR_PID 2>/dev/null; then
     fi
     
     # Verificar que esté escuchando en el puerto 8080
-    echo "🔍 Verificando que Structurizr esté escuchando en puerto 8080..."
-    if netstat -tuln | grep -q ":8080 "; then
-        echo "✅ Structurizr Lite escuchando en puerto 8080"
+echo "🔍 Verificando que Structurizr esté escuchando en puerto 8080..."
+if netstat -tuln | grep -q ":8080 "; then
+    echo "✅ Structurizr Lite escuchando en puerto 8080"
+else
+    echo "⚠️  Structurizr Lite no está escuchando en puerto 8080"
+    echo "🔍 Puertos en uso:"
+    netstat -tuln | grep LISTEN
+    
+    # Buscar puerto de Structurizr Lite
+    echo "🔍 Buscando puerto de Structurizr Lite..."
+    STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | cut -d: -f2)
+    if [ ! -z "$STRUCTURIZR_PORT" ]; then
+        echo "✅ Structurizr Lite encontrado en puerto $STRUCTURIZR_PORT"
+        echo "🔄 Actualizando configuración de nginx para usar puerto $STRUCTURIZR_PORT..."
+        sed -i "s/proxy_pass http:\/\/localhost:8080;/proxy_pass http:\/\/localhost:$STRUCTURIZR_PORT;/" /etc/nginx/nginx.conf
+        sed -i "s/X-Forwarded-Port 8080;/X-Forwarded-Port $STRUCTURIZR_PORT;/" /etc/nginx/nginx.conf
     else
-        echo "⚠️  Structurizr Lite no está escuchando en puerto 8080"
-        echo "🔍 Puertos en uso:"
-        netstat -tuln | grep LISTEN
+        echo "❌ No se pudo encontrar el puerto de Structurizr Lite"
     fi
+fi
 else
     echo "❌ Error: Structurizr Lite no se inició correctamente"
     echo "🔍 Últimos logs de Structurizr:"
