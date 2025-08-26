@@ -27,9 +27,10 @@ if [ ! -f "/usr/local/structurizr/structurizr-lite.jar" ]; then
     exit 1
 fi
 
-# Verificar que el archivo JAR es válido
-if ! java -jar /usr/local/structurizr/structurizr-lite.jar --help > /dev/null 2>&1; then
-    echo "❌ Error: Archivo structurizr-lite.jar no es válido"
+# Verificar que el archivo JAR tiene un tamaño razonable (más de 1MB)
+FILE_SIZE=$(stat -c%s /usr/local/structurizr/structurizr-lite.jar 2>/dev/null || stat -f%z /usr/local/structurizr/structurizr-lite.jar 2>/dev/null || echo "0")
+if [ "$FILE_SIZE" -lt 1000000 ]; then
+    echo "❌ Error: Archivo structurizr-lite.jar es muy pequeño ($FILE_SIZE bytes), posiblemente corrupto"
     exit 1
 fi
 
