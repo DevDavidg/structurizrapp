@@ -30,6 +30,13 @@ http {
         root /usr/share/nginx/html;
         index index.html;
         
+        # Health check público (sin autenticación)
+        location /health {
+            access_log off;
+            return 200 "OK\n";
+            add_header Content-Type text/plain;
+        }
+        
         # Configuración para autenticación básica
         location / {
             auth_basic "Sistema ERP - Arquitectura";

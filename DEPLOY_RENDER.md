@@ -72,6 +72,15 @@ La aplicación incluye autenticación básica:
 - **Usuario**: `admin`
 - **Contraseña**: `1234`
 
+### 4.1. Funcionalidad
+
+La aplicación desplegada incluye:
+
+- **Página principal**: Muestra el archivo DSL de Structurizr
+- **Autenticación**: Protegida con usuario/contraseña
+- **Archivo DSL**: Accesible en `/workspace.dsl`
+- **Interfaz web**: Formateada y legible
+
 ### 5. Verificación del Despliegue
 
 1. **Logs**: Revisa los logs en Render Dashboard
