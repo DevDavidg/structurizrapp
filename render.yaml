@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: structurizr-erp
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
