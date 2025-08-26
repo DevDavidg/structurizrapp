@@ -36,10 +36,17 @@ fi
 
 echo "✅ Archivo Structurizr Lite verificado"
 
+# Verificar que el archivo workspace.dsl existe
+if [ ! -f "/usr/local/structurizr/workspace.dsl" ]; then
+    echo "❌ Error: Archivo workspace.dsl no encontrado"
+    exit 1
+fi
+echo "✅ Archivo workspace.dsl verificado"
+
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
 cd /usr/local/structurizr
-java -jar structurizr-lite.war --workspace workspace.dsl --port 8080 &
+java -jar structurizr-lite.war --workspace . --port 8080 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
