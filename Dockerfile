@@ -1,11 +1,18 @@
 # Dockerfile para Structurizr ERP en Render
-FROM nginx:alpine
+FROM alpine:latest
 
-# Instalar dependencias
-RUN apk add --no-cache curl apache2-utils
+# Instalar Java, nginx y dependencias
+RUN apk add --no-cache openjdk17-jre nginx apache2-utils curl
 
 # Crear directorio de trabajo
 WORKDIR /app
+
+# Crear directorio para Structurizr
+RUN mkdir -p /usr/local/structurizr
+
+# Descargar Structurizr Lite
+RUN curl -L -o /usr/local/structurizr/structurizr-lite.jar \
+    "https://github.com/structurizr/lite/releases/latest/download/structurizr-lite.jar"
 
 # Copiar archivos de configuración
 COPY nginx.conf.example /etc/nginx/nginx.conf
@@ -13,11 +20,6 @@ COPY src/main/resources/workspace.dsl /usr/local/structurizr/workspace.dsl
 
 # Generar archivo de contraseñas
 RUN htpasswd -cb /etc/nginx/.htpasswd admin 1234
-
-# Crear página HTML simple que muestre el DSL
-RUN echo '<!DOCTYPE html><html><head><title>Arquitectura ERP - Structurizr</title><style>body{font-family:Arial,sans-serif;margin:40px;background:#f5f5f5;}h1{color:#333;}pre{background:#fff;padding:20px;border-radius:5px;overflow-x:auto;border:1px solid #ddd;}</style></head><body><h1>🏗️ Arquitectura del Sistema ERP</h1><p>Este es el archivo DSL de Structurizr que define la arquitectura del sistema:</p><pre>' > /usr/share/nginx/html/index.html && \
-    cat /usr/local/structurizr/workspace.dsl >> /usr/share/nginx/html/index.html && \
-    echo '</pre><p><strong>Credenciales:</strong> admin / 1234</p></body></html>' >> /usr/share/nginx/html/index.html
 
 # Script de inicio
 COPY start-production.sh /start-production.sh
