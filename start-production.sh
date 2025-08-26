@@ -61,7 +61,18 @@ STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
 echo "⏳ Esperando a que Structurizr esté listo..."
-sleep 20
+sleep 30
+
+# Esperar a que Structurizr esté completamente iniciado
+echo "🔍 Esperando a que Structurizr esté completamente listo..."
+for i in {1..10}; do
+    if netstat -tuln | grep -q ":(1801[23]|19099)"; then
+        echo "✅ Structurizr Lite detectado en puerto, intento $i"
+        break
+    fi
+    echo "⏳ Esperando puerto de Structurizr Lite, intento $i/10..."
+    sleep 5
+done
 
 # Verificar que Structurizr esté ejecutándose
 if kill -0 $STRUCTURIZR_PID 2>/dev/null; then
@@ -92,13 +103,33 @@ else
     echo "🔍 Buscando puerto de Structurizr Lite..."
     echo "🔍 Puertos disponibles:"
     netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)"
-    STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | sed 's/.*://')
-    echo "🔍 Puerto extraído: '$STRUCTURIZR_PORT'"
+    
+    # Intentar múltiples veces para encontrar el puerto correcto
+    STRUCTURIZR_PORT=""
+    for attempt in {1..5}; do
+        echo "🔍 Intento $attempt de detectar puerto..."
+        STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | sed 's/.*://')
+        if [ ! -z "$STRUCTURIZR_PORT" ]; then
+            echo "✅ Puerto detectado: $STRUCTURIZR_PORT"
+            break
+        fi
+        echo "⏳ Puerto no detectado, esperando 2 segundos..."
+        sleep 2
+    done
+    echo "🔍 Puerto final extraído: '$STRUCTURIZR_PORT'"
     if [ ! -z "$STRUCTURIZR_PORT" ]; then
         echo "✅ Structurizr Lite encontrado en puerto $STRUCTURIZR_PORT"
         echo "🔄 Actualizando configuración de nginx para usar puerto $STRUCTURIZR_PORT..."
         sed -i "s/proxy_pass http:\/\/localhost:8080;/proxy_pass http:\/\/localhost:$STRUCTURIZR_PORT;/" /etc/nginx/nginx.conf
         sed -i "s/X-Forwarded-Port 8080;/X-Forwarded-Port $STRUCTURIZR_PORT;/" /etc/nginx/nginx.conf
+        
+        # Verificar conectividad a Structurizr Lite
+        echo "🔍 Verificando conectividad a Structurizr Lite en puerto $STRUCTURIZR_PORT..."
+        if curl -s --connect-timeout 5 http://localhost:$STRUCTURIZR_PORT > /dev/null 2>&1; then
+            echo "✅ Conectividad a Structurizr Lite verificada"
+        else
+            echo "⚠️  No se pudo conectar a Structurizr Lite en puerto $STRUCTURIZR_PORT"
+        fi
     else
         echo "❌ No se pudo encontrar el puerto de Structurizr Lite"
     fi
