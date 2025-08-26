@@ -81,7 +81,10 @@ else
     
     # Buscar puerto de Structurizr Lite
     echo "🔍 Buscando puerto de Structurizr Lite..."
-    STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | cut -d: -f2)
+    echo "🔍 Puertos disponibles:"
+    netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)"
+    STRUCTURIZR_PORT=$(netstat -tuln | grep LISTEN | grep -E ":(1801[23]|19099)" | head -1 | awk '{print $4}' | sed 's/.*://')
+    echo "🔍 Puerto extraído: '$STRUCTURIZR_PORT'"
     if [ ! -z "$STRUCTURIZR_PORT" ]; then
         echo "✅ Structurizr Lite encontrado en puerto $STRUCTURIZR_PORT"
         echo "🔄 Actualizando configuración de nginx para usar puerto $STRUCTURIZR_PORT..."
