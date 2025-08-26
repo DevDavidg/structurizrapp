@@ -47,7 +47,11 @@ echo "✅ Archivo workspace.dsl verificado"
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
 cd /usr/local/structurizr
-java -jar structurizr-lite.war --workspace /usr/local/structurizr --port 8080 &
+echo "🔍 Directorio actual: $(pwd)"
+echo "🔍 Contenido del directorio:"
+ls -la
+echo "🔍 Ejecutando Structurizr Lite..."
+java -jar structurizr-lite.war --workspace /usr/local/structurizr --port 8080 > /tmp/structurizr.log 2>&1 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo
@@ -58,16 +62,30 @@ sleep 20
 if kill -0 $STRUCTURIZR_PID 2>/dev/null; then
     echo "✅ Structurizr Lite iniciado correctamente"
     
+    # Mostrar logs de Structurizr
+    echo "🔍 Logs de Structurizr Lite:"
+    if [ -f "/tmp/structurizr.log" ]; then
+        tail -20 /tmp/structurizr.log
+    else
+        echo "⚠️  No se encontraron logs de Structurizr"
+    fi
+    
     # Verificar que esté escuchando en el puerto 8080
     echo "🔍 Verificando que Structurizr esté escuchando en puerto 8080..."
     if netstat -tuln | grep -q ":8080 "; then
         echo "✅ Structurizr Lite escuchando en puerto 8080"
     else
         echo "⚠️  Structurizr Lite no está escuchando en puerto 8080"
+        echo "🔍 Puertos en uso:"
+        netstat -tuln | grep LISTEN
     fi
 else
     echo "❌ Error: Structurizr Lite no se inició correctamente"
     echo "🔍 Últimos logs de Structurizr:"
+    if [ -f "/tmp/structurizr.log" ]; then
+        cat /tmp/structurizr.log
+    fi
+    echo "🔍 Procesos Java:"
     ps aux | grep java
     exit 1
 fi
