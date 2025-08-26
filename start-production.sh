@@ -20,6 +20,21 @@ fi
 # Crear directorio para Structurizr si no existe
 mkdir -p /usr/local/structurizr
 
+# Verificar que el archivo JAR existe y es válido
+echo "🔍 Verificando archivo Structurizr Lite..."
+if [ ! -f "/usr/local/structurizr/structurizr-lite.jar" ]; then
+    echo "❌ Error: Archivo structurizr-lite.jar no encontrado"
+    exit 1
+fi
+
+# Verificar que el archivo JAR es válido
+if ! java -jar /usr/local/structurizr/structurizr-lite.jar --help > /dev/null 2>&1; then
+    echo "❌ Error: Archivo structurizr-lite.jar no es válido"
+    exit 1
+fi
+
+echo "✅ Archivo Structurizr Lite verificado"
+
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
 java -jar /usr/local/structurizr/structurizr-lite.jar /usr/local/structurizr/workspace.dsl 8080 &
