@@ -8,7 +8,7 @@ PORT=${PORT:-8080}
 echo "🌐 Puerto asignado: $PORT"
 
 # Modificar configuración de nginx para usar el puerto correcto
-sed -i "s/listen 8080;/listen $PORT;/" /etc/nginx/nginx.conf
+sed -i "s/listen \$PORT;/listen $PORT;/" /etc/nginx/nginx.conf
 
 # Verificar que los archivos necesarios existen
 echo "🔍 Verificando archivos..."
@@ -46,7 +46,7 @@ echo "✅ Archivo workspace.dsl verificado"
 # Iniciar Structurizr Lite en segundo plano
 echo "📊 Iniciando Structurizr Lite..."
 cd /usr/local/structurizr
-java -jar structurizr-lite.war --workspace . --port 8080 &
+java -jar structurizr-lite.war --workspace /usr/local/structurizr --port 8080 &
 STRUCTURIZR_PID=$!
 
 # Esperar a que Structurizr esté listo

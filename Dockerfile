@@ -2,7 +2,7 @@
 FROM alpine:latest
 
 # Instalar Java, nginx y dependencias
-RUN apk add --no-cache openjdk17-jre nginx apache2-utils curl file net-tools
+RUN apk add --no-cache openjdk17-jre nginx apache2-utils curl file net-tools graphviz
 
 # Crear directorio de trabajo
 WORKDIR /app
