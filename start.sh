@@ -1,46 +1,24 @@
 #!/usr/bin/env sh
-set -euo pipefail
+set -eu
 
 DATA_DIR=/usr/local/structurizr
 cd "$DATA_DIR"
 
-echo "🚀 Iniciando Structurizr Lite con auto-corrección..."
-
-# Verificar workspace.dsl
-if [ ! -f "workspace.dsl" ]; then
-    echo "❌ Error: workspace.dsl no encontrado"
-    exit 1
-fi
-echo "✅ workspace.dsl encontrado ($(wc -l < workspace.dsl) líneas)"
-
-# Borrar JSON vacío para evitar 500 en "/"
+# borrar JSON vacío (causaba 500)
 if [ -f workspace.json ] && [ ! -s workspace.json ]; then
-    echo "⚠️  workspace.json está vacío; se elimina para usar workspace.dsl"
-    rm -f workspace.json
-    echo "✅ workspace.json vacío eliminado"
-elif [ -f workspace.json ]; then
-    echo "✅ workspace.json encontrado con contenido ($(wc -c < workspace.json) bytes)"
-else
-    echo "✅ No existe workspace.json - usando solo workspace.dsl"
+  echo "workspace.json está vacío; se elimina para usar workspace.dsl"
+  rm -f workspace.json
 fi
 
-# Asegurar índice de búsqueda
-echo "📁 Creando directorio de índice..."
+# índice de búsqueda (silencia el warning de Lucene)
 mkdir -p "$DATA_DIR/.structurizr/index"
-echo "✅ Directorio de índice creado"
 
-# Configurar URL pública para enlaces correctos detrás de proxy
+# URL pública detrás de proxy (opcional pero útil)
 if [ -n "${STRUCTURIZR_URL:-}" ]; then
-    echo "🌐 Configurando URL pública: $STRUCTURIZR_URL"
-    echo "structurizr.url=${STRUCTURIZR_URL}" > "$DATA_DIR/structurizr.properties"
-    echo "✅ structurizr.properties creado"
+  printf 'structurizr.url=%s\n' "$STRUCTURIZR_URL" > "$DATA_DIR/structurizr.properties"
 fi
 
-echo "📊 Iniciando Structurizr Lite..."
-echo "   Puerto: ${PORT:-8080}"
-echo "   Dirección: 0.0.0.0"
-echo "   Perfil: production"
-
+# ligar a 0.0.0.0 y respetar $PORT de Render
 exec java -jar "$DATA_DIR/structurizr-lite.war" "$DATA_DIR" \
   --server.address=0.0.0.0 \
   --server.port="${PORT:-8080}" \
